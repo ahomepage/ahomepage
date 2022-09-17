@@ -16,14 +16,10 @@ function App() {
   useEffect(() => {
     const grid = GridStack.init({
       float: true,
-      cellHeight: 48
+      cellHeight: 48,
     });
-    // grid.on("dragstop", (_, element) => {
-    //   console.log((element as any)?.getAttribute('gs-x'));
-    // });
-    console.log("useEffect");
     grid.on("change", function (event: Event, items) {
-      console.log(items);
+      // console.log(items);
     });
   }, []);
   const [widgets, setWidgets] = useState<Widget[]>([
@@ -33,9 +29,35 @@ function App() {
         x: 2,
         y: 4,
         w: 7,
+        noMove: true,
+        id: 1,
+      },
+    },
+    {
+      name: "test",
+      option: {
+        x: 2,
+        y: 4,
+        w: 7,
+        noMove: false,
+        id: 2,
       },
     },
   ]);
+
+  const setWidgetOption = (index: number, option: GridStackWidget) => {
+    console.log(index)
+    let copyWidgets = [...widgets];
+    copyWidgets[index] = {
+      ...copyWidgets[index],
+      option: {
+        ...copyWidgets[index].option,
+        ...option,
+      },
+    };
+    console.log(copyWidgets)
+    setWidgets(copyWidgets);
+  };
 
   return (
     <div className="app">
@@ -45,7 +67,7 @@ function App() {
       <div className="layer-animation"></div>
       {/* 功能层 */}
       <div className="layer-features">
-        <LanguageSwitch/>
+        <LanguageSwitch />
         {/* 网格堆积布局 */}
         <div className="grid-stack">
           {widgets.map((widget, wIndex) => (
@@ -59,11 +81,17 @@ function App() {
               gs-min-h={widget.option.minH}
               gs-max-w={widget.option.maxW}
               gs-max-h={widget.option.maxH}
-              gs-no-move="true"
+              gs-no-move={String(widget.option.noMove)}
+              gs-id={widget.option.id}
+              gs-locked="true"
               className="grid-stack-item"
             >
               <div className="grid-stack-item-content">
-                <Search />
+                <Search
+                  setWidgetOption={(option: GridStackWidget) =>
+                    setWidgetOption(wIndex, option)
+                  }
+                />
               </div>
             </div>
           ))}
