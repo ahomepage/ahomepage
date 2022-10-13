@@ -1,12 +1,22 @@
 {
   "zh": {
     "translation": {
-      "searchInputPlaceholder": "请输入搜索内容"
+      "searchInputPlaceholder": "请输入搜索内容",
+      "toggleSizeTips": {
+        "sm": "",
+        "md": "",
+        "lg": ""
+      }
     }
   },
   "en": {
     "translation": {
-      "searchInputPlaceholder": "Enter search content"
+      "searchInputPlaceholder": "Enter search content",
+      "toggleSizeTips": {
+        "sm": "",
+        "md": "",
+        "lg": ""
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
-// import { Popover } from "@mui/material";
+
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,15 +13,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import ContentCut from "@mui/icons-material/ContentCut";
 
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
-
-import { GridStackWidget } from "gridstack";
+import { useRef, useState } from "react";
 
 interface Props {
-  setWidgetOption?: (option: GridStackWidget) => void;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
-function Search({ setWidgetOption }: Props) {
+function Search({ x, y, w, h }: Props) {
   const { t } = useTranslation();
   const searchButton = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,14 +33,6 @@ function Search({ setWidgetOption }: Props) {
   const closeSwitchSearchEngine = () => {
     setAnchorEl(null);
   };
-  useEffect(() => {
-    setWidgetOption && setWidgetOption({
-      minW: 3,
-      maxW: 12,
-      minH: 1,
-      maxH: 2,
-    });
-  }, []);
 
   return (
     <Paper
@@ -92,7 +85,9 @@ function Search({ setWidgetOption }: Props) {
         {/* <Divider /> */}
         <MenuItem>
           <ListItemIcon>{/* <Cloud fontSize="small" /> */}</ListItemIcon>
-          <ListItemText>Web Clipboard</ListItemText>
+          <ListItemText>
+            x:{x} / y:{y} / w:{w} / h:{h}
+          </ListItemText>
         </MenuItem>
       </Menu>
 
@@ -112,4 +107,8 @@ function Search({ setWidgetOption }: Props) {
     </Paper>
   );
 }
+Search.minW = 4;
+Search.maxW = 12;
+Search.minH = 1;
+Search.maxH = 2;
 export default Search;
