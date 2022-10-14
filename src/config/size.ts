@@ -1,33 +1,36 @@
-const config = [
+export type Breakpoint = "lg" | "md" | "sm";
+
+type Config = {
+  value: Breakpoint;
+  dp: number; // device pixcel
+  cols: number;
+  tip?: string;
+}[];
+
+const config: Config = [
   {
     value: "lg",
-    name: "大尺寸",
-    size: 1200,
+    tip: "电脑端",
+    dp: 1200,
     cols: 12,
   },
   {
     value: "md",
-    name: "中尺寸",
-    size: 900,
+    tip: "平板电脑",
+    dp: 600,
     cols: 6,
   },
   {
     value: "sm",
-    name: "小尺寸",
-    size: 600,
+    tip: "手机端",
+    dp: 0,
     cols: 4,
   },
 ];
 export const cols = Object.fromEntries(
-    config.map((item) => [item.value, item.cols])
+  config.map((item) => [item.value, item.cols])
 );
 
 export const breakpoints = Object.fromEntries(
-    config.map((item) => [item.value, item.size])
+  config.map((item) => [item.value, item.dp])
 );
-
-export const tips = Object.fromEntries(
-    config.map((item) => [item.value, `已为您切换至「${item.name}」配置`])
-);
-
-

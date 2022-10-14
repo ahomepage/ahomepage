@@ -1,95 +1,132 @@
 import React from "react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import GridLayout, { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import { Memory } from "utils";
+import { Button, IconButton } from "@mui/material";
+import {
+  DeleteOutline,
+} from "@mui/icons-material";
 
 import Search from "widgets/search";
 
-import { size } from "config";
+import { size, config } from "config";
 
+import { Widgets, WidgetsReturn } from "lib";
+let widgetsInstance = new Widgets();
 interface Props {
   setToast?: any;
 }
-type WidgetOption = "minW" | "maxW" | "minH" | "maxH";
+// type WidgetOption = "minW" | "maxW" | "minH" | "maxH";
+interface WidgetItem {
+  name: string;
+  key: string;
+  storage?: string;
+}
 
-const layoutMemory = new Memory("layout");
 const ReactGridLayout = WidthProvider(Responsive);
 
 function Grid({ setToast }: Props) {
-  const widgets: Record<string, any> = {
+  const { t } = useTranslation();
+
+  const widgetsMap: Record<string, any> = {
     search: Search,
   };
-  const initLayout = [
-    {
-      i: "search_0",
-      x: 1,
-      y: 0,
-      w: 4,
-      h: 1,
-    },
-    {
-      i: "search_1",
-      x: 1,
-      y: 0,
-      w: 4,
-      h: 1,
-    },
-  ];
 
-  const layout: GridLayout.Layout[] = layoutMemory.get() || initLayout;
-
-  function init() {
-    layout.forEach((layoutItem) => {
-      let widgetOptions: WidgetOption[] = ["minW", "maxW", "minH", "maxH"];
-      widgetOptions.forEach((attr) => {
-        const widgetName = layoutItem.i.split("_")[0];
-        if (widgets[widgetName][attr]) {
-          layoutItem[attr] = widgets[widgetName][attr];
-        }
-      });
-    });
-  }
-  init();
-  const [layoutRef, setLayoutRef] = useState(layout);
-
-  let handleLayoutChange = (layout: GridLayout.Layout[]) => {
-    console.log(layout);
-    setLayoutRef(layout);
-    layoutMemory.set(layout);
+  /* layouts */
+  const [layoutsRef, setLayoutsRef] = useState<GridLayout.Layouts>(
+    widgetsInstance.get().layouts
+  );
+  /* widgets */
+  const [widgetsRef, setWidgetsRef] = useState<WidgetItem[]>(
+    widgetsInstance.get().widgets
+  );
+  const setWidgetsState = ({ widgets, layouts }: WidgetsReturn) => {
+    console.log(JSON.stringify(widgets))
+    setWidgetsRef(widgets);
+    setLayoutsRef(layouts);
   };
-  let handleBreakPointChange = (breakpoint: any) => {
+
+  const addWidget = (name: string, storage: string) => {
+    setWidgetsState(widgetsInstance.add(name, storage));
+  };
+  const removeWidget = (key: string) => {
+    setWidgetsState(widgetsInstance.remove(key));
+  };
+
+  const handleLayoutChange = (
+    _: GridLayout.Layout[],
+    _layouts: GridLayout.Layouts
+  ) => {
+    console.log('handleLayoutChange', JSON.stringify(_))
+    setLayoutsRef(widgetsInstance.setLayouts(_layouts).layouts);
+  };
+
+  /* computed current breakpoint */
+  const currentBreakpoint = (Responsive as any).utils.getBreakpointFromWidth(
+    size.breakpoints,
+    config.initWidth
+  );
+  const [breakpointName, setBreakpointName] =
+    useState<size.Breakpoint>(currentBreakpoint);
+
+  let handleBreakPointChange = (breakpoint: size.Breakpoint) => {
+    setBreakpointName(breakpoint);
     setToast({
       open: true,
-      message: size.tips[breakpoint],
+      message: t(`toggleSizeTips.${breakpoint}`),
       autoHideDuration: 3000,
     });
   };
   return (
-    <ReactGridLayout
-      className="layout"
-      layouts={{ lg: layoutRef }}
-      rowHeight={48}
-      compactType={null}
-      breakpoints={size.breakpoints}
-      cols={size.cols}
-      onBreakpointChange={handleBreakPointChange}
-      onLayoutChange={handleLayoutChange}
-    >
-      {layoutRef.map((layoutItem) => (
-        <div key={layoutItem.i}>
-          {React.createElement(widgets[layoutItem.i.split("_")[0]], {
-            x: layoutItem.x,
-            y: layoutItem.y,
-            w: layoutItem.w,
-            h: layoutItem.h,
-          })}
-        </div>
-      ))}
-    </ReactGridLayout>
+    <div>
+      <Button onClick={() => addWidget("search", "")}>Click me</Button>
+      {Object.keys(layoutsRef).map((key) => layoutsRef[key].length)}
+      {widgetsRef.length}
+      <ReactGridLayout
+        className="layout"
+        layouts={layoutsRef}
+        rowHeight={config.rowHeight}
+        compactType={null}
+        preventCollision={true}
+        breakpoints={size.breakpoints}
+        cols={size.cols}
+        onBreakpointChange={handleBreakPointChange}
+        onLayoutChange={handleLayoutChange}
+      >
+        {widgetsRef.map((widget) => (
+          <div key={widget.key}>
+            {React.createElement(widgetsMap[widget.name], {
+              x: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                ?.x,
+              y: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                ?.y,
+              w: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                ?.w,
+              h: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                ?.h,
+            })}
+            <IconButton
+              color="error"
+              style={{
+                position: "absolute",
+                right: "-0.5em",
+                top: "-0.5em",
+                zIndex: 1,
+              }}
+              onClick={() => {
+                removeWidget(widget.key);
+              }}
+            >
+              <DeleteOutline />
+            </IconButton>
+          </div>
+        ))}
+      </ReactGridLayout>
+    </div>
   );
 }
 export default Grid;

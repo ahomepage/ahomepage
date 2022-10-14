@@ -111,4 +111,13 @@ Search.minW = 4;
 Search.maxW = 12;
 Search.minH = 1;
 Search.maxH = 2;
+Search.lg = {
+  minW: 6,
+}
+Search.md = {
+  minW: 3,
+}
+Search.sm = {
+  minW: 2,
+}
 export default Search;
