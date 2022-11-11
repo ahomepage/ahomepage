@@ -4,13 +4,26 @@
 
 .app {
   min-height: 100vh;
-  background-color: var(--bg-color-1);
 }
 .layer-background {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-color-1);
 }
 .layer-features {
   /* background-color: #ddd; */
 }
 .layer-features > .grid-stack > .grid-stack-item > .grid-stack-item-content {
   inset: 0;
+}
+.layer-features .editing-mask {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: move;
+  left: 0;
+  top: 0;
 }

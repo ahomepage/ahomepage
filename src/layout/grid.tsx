@@ -7,20 +7,30 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
 import { Button, IconButton } from "@mui/material";
-import {
-  DeleteOutline,
-} from "@mui/icons-material";
+import { DeleteOutline, EditOutlined } from "@mui/icons-material";
 
-import Search from "widgets/search";
+import WidgetWrap from "components/widget-wrap";
+
+import widgetsMap from "widgetsMap";
 
 import { size, config } from "config";
 
-import { Widgets, WidgetsReturn } from "lib";
-let widgetsInstance = new Widgets();
+import { WidgetsModel, WidgetsReturn } from "lib";
+let widgetsInstance = new WidgetsModel(undefined, undefined, widgetsMap);
 interface Props {
   setToast?: any;
 }
-// type WidgetOption = "minW" | "maxW" | "minH" | "maxH";
+
+export interface WidgetProps {
+  storage: string;
+  setStorage: (storage: string) => void;
+  id: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 interface WidgetItem {
   name: string;
   key: string;
@@ -31,10 +41,8 @@ const ReactGridLayout = WidthProvider(Responsive);
 
 function Grid({ setToast }: Props) {
   const { t } = useTranslation();
-
-  const widgetsMap: Record<string, any> = {
-    search: Search,
-  };
+  /* is editing ? */
+  const [editing, setEditing] = useState(false);
 
   /* layouts */
   const [layoutsRef, setLayoutsRef] = useState<GridLayout.Layouts>(
@@ -45,7 +53,6 @@ function Grid({ setToast }: Props) {
     widgetsInstance.get().widgets
   );
   const setWidgetsState = ({ widgets, layouts }: WidgetsReturn) => {
-    console.log(JSON.stringify(widgets))
     setWidgetsRef(widgets);
     setLayoutsRef(layouts);
   };
@@ -61,7 +68,7 @@ function Grid({ setToast }: Props) {
     _: GridLayout.Layout[],
     _layouts: GridLayout.Layouts
   ) => {
-    console.log('handleLayoutChange', JSON.stringify(_))
+    console.log("handleLayoutChange", JSON.stringify(_));
     setLayoutsRef(widgetsInstance.setLayouts(_layouts).layouts);
   };
 
@@ -83,7 +90,11 @@ function Grid({ setToast }: Props) {
   };
   return (
     <div>
-      <Button onClick={() => addWidget("search", "")}>Click me</Button>
+      <Button onClick={() => addWidget("search", "")}>search</Button>
+      <Button onClick={() => addWidget("note", "")}>note</Button>
+      <Button onClick={() => setEditing(!editing)}>
+        <EditOutlined></EditOutlined>
+      </Button>
       {Object.keys(layoutsRef).map((key) => layoutsRef[key].length)}
       {widgetsRef.length}
       <ReactGridLayout
@@ -94,35 +105,53 @@ function Grid({ setToast }: Props) {
         preventCollision={true}
         breakpoints={size.breakpoints}
         cols={size.cols}
+        // isBounded={true}
+        isDraggable={editing}
+        isResizable={editing}
         onBreakpointChange={handleBreakPointChange}
         onLayoutChange={handleLayoutChange}
       >
         {widgetsRef.map((widget) => (
           <div key={widget.key}>
-            {React.createElement(widgetsMap[widget.name], {
-              x: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
-                ?.x,
-              y: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
-                ?.y,
-              w: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
-                ?.w,
-              h: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
-                ?.h,
-            })}
-            <IconButton
-              color="error"
-              style={{
-                position: "absolute",
-                right: "-0.5em",
-                top: "-0.5em",
-                zIndex: 1,
-              }}
-              onClick={() => {
-                removeWidget(widget.key);
-              }}
+            <WidgetWrap
+              editing={editing}
+              widget={widget}
+              removeWidget={removeWidget}
             >
-              <DeleteOutline />
-            </IconButton>
+              {React.createElement(widgetsMap[widget.name], {
+                storage: widget.storage,
+                setStorage: (storage: string) => {
+                  widgetsInstance.setStorage(widget.key, storage);
+                },
+                id: widget.key,
+                x: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                  ?.x,
+                y: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                  ?.y,
+                w: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                  ?.w,
+                h: layoutsRef[breakpointName]?.find(({ i }) => i === widget.key)
+                  ?.h,
+              })}
+
+              {editing && (
+                <IconButton
+                  color="error"
+                  style={{
+                    position: "absolute",
+                    right: "-0.5em",
+                    top: "-0.5em",
+                    zIndex: 2,
+                  }}
+                  onClick={() => {
+                    removeWidget(widget.key);
+                  }}
+                >
+                  <DeleteOutline />
+                </IconButton>
+              )}
+              {editing && <div className="editing-mask"></div>}
+            </WidgetWrap>
           </div>
         ))}
       </ReactGridLayout>

@@ -5,6 +5,13 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@milkdown/core": "^6.5.0",
+    "@milkdown/plugin-cursor": "^6.5.0",
+    "@milkdown/plugin-diagram": "^6.5.0",
+    "@milkdown/plugin-listener": "^6.5.0",
+    "@milkdown/preset-gfm": "^6.5.0",
+    "@milkdown/react": "^6.5.0",
+    "@milkdown/theme-nord": "^6.5.0",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.5",
     "@testing-library/jest-dom": "^5.16.5",
@@ -63,6 +70,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-grid-layout": "^1.3.2"
+    "@types/react-grid-layout": "^1.3.2",
+    "@types/webpack-env": "^1.18.0"
   }
 }

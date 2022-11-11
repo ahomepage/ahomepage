@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Grid from "layout/grid";
 import LanguageSwitch from "components/language-switch";
-
 import { Snackbar, Alert, AlertColor } from "@mui/material";
 
 import "App.css";

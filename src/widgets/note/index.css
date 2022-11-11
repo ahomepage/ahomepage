@@ -1,0 +1,47 @@
+.layer-features .milkdown {
+  height: 100%;
+  overflow: auto;
+  box-shadow: none;
+  background: transparent;
+
+}
+.milkdown div.editor {
+  padding: 15px;
+  background-color: transparent;
+  /* min-height: 200px; */
+}
+.milkdown div.editor > * {
+  margin: 5px 0;
+}
+.milkdown div.editor .heading {
+  margin: 10px 0;
+}
+
+.milkdown div.editor p {
+  font-size: 14px;
+}
+.milkdown div.editor h6 {
+  font-size: 16px;
+}
+.milkdown div.editor h5 {
+  font-size: 18px;
+}
+.milkdown div.editor h4 {
+  font-size: 20px;
+}
+.milkdown div.editor h3 {
+  font-size: 22px;
+}
+.milkdown div.editor h2 {
+  font-size: 24px;
+}
+.milkdown div.editor h1 {
+  font-size: 26px;
+}
+.milkdown .icon.material-icons {
+  font-size: 20px;
+}
+.milkdown div.editor .list-item,
+.milkdown div.editor .task-list-item {
+  margin-top: 0;
+}

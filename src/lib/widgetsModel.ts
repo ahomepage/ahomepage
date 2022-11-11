@@ -1,11 +1,7 @@
 import type GridLayout from "react-grid-layout";
-import Search from "widgets/search";
 import { size } from "config";
 import { Memory, genId4 } from "utils";
-
-const widgetsMap: Record<string, any> = {
-  search: Search,
-};
+import { WidgetsMap } from "widgetsMap";
 
 const layoutsMemory = new Memory("layouts");
 const widgetsMemory = new Memory("widgets");
@@ -21,17 +17,32 @@ export interface WidgetsReturn {
   layouts: GridLayout.Layouts;
 }
 
-export class Widgets {
+export class WidgetsModel {
   public widgets: WidgetItem[];
   public layouts: GridLayout.Layouts;
-  constructor(widgets: WidgetItem[] = [], layouts: GridLayout.Layouts = {}) {
+  public widgetsMap: WidgetsMap;
+  constructor(
+    widgets: WidgetItem[] = [],
+    layouts: GridLayout.Layouts = {},
+    widgetsMap?: WidgetsMap
+  ) {
     this.widgets = widgetsMemory.get() || widgets;
     this.layouts = layoutsMemory.get() || layouts;
+    this.widgetsMap = widgetsMap || {};
   }
   set({ widgets, layouts }: WidgetsReturn) {
     this.setWidgets(widgets);
     this.setLayouts(layouts);
     return this.get();
+  }
+
+  setStorage(key: string, storage: string) {
+    let _widgets = this.get().widgets;
+    let matchedWidget = _widgets.find(widget => widget.key === key);
+    if (matchedWidget) {
+      matchedWidget.storage = storage;
+      this.setWidgets(_widgets);
+    }
   }
   setWidgets(widgets: WidgetItem[]) {
     const copyWidgets = [...widgets];
@@ -57,13 +68,21 @@ export class Widgets {
     const key = `${name}_${genId4()}`;
     let genInitLayout = (breakpoint: size.Breakpoint) => {
       const minW =
-        widgetsMap[name][breakpoint]?.minW || widgetsMap[name].minW || 1;
+        this.widgetsMap[name][breakpoint]?.minW ||
+        this.widgetsMap[name].minW ||
+        1;
       const maxW =
-        widgetsMap[name][breakpoint]?.maxW || widgetsMap[name].maxW || Infinity;
+        this.widgetsMap[name][breakpoint]?.maxW ||
+        this.widgetsMap[name].maxW ||
+        12;
       const minH =
-        widgetsMap[name][breakpoint]?.minH || widgetsMap[name].minH || 1;
+        this.widgetsMap[name][breakpoint]?.minH ||
+        this.widgetsMap[name].minH ||
+        1;
       const maxH =
-        widgetsMap[name][breakpoint]?.maxH || widgetsMap[name].maxH || Infinity;
+        this.widgetsMap[name][breakpoint]?.maxH ||
+        this.widgetsMap[name].maxH ||
+        12;
       return {
         x: 0,
         y: 0,

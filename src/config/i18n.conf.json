@@ -1,21 +1,35 @@
 {
   "zh": {
     "translation": {
-      "searchInputPlaceholder": "请输入搜索内容",
       "toggleSizeTips": {
         "sm": "切换至【手机端】布局",
         "md": "切换至【平板电脑】布局",
         "lg": "切换至【电脑端】布局"
+      },
+      "search": {
+        "placeholder": "请输入搜索内容",
+        "baidu": "百度",
+        "github": "GitHub",
+        "google": "Google",
+        "zhihu": "知乎",
+        "isearch": "iSearch"
       }
     }
   },
   "en": {
     "translation": {
-      "searchInputPlaceholder": "Enter search content",
       "toggleSizeTips": {
         "sm": "Switch to the [Mobile] layout",
         "md": "Switch to the [Tablet] layout",
         "lg": "Switch to the [Computer] layout"
+      },
+      "search": {
+        "placeholder": "Enter search content",
+        "baidu": "Baidu",
+        "github": "GitHub",
+        "google": "Google",
+        "zhihu": "ZhiHu",
+        "isearch": "iSearch"
       }
     }
   }
