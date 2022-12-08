@@ -12,7 +12,20 @@
         "github": "GitHub",
         "google": "Google",
         "zhihu": "知乎",
-        "isearch": "iSearch"
+        "isearch": "iSearch",
+        "translate": "翻译",
+        "codelf": "codelf"
+      },
+      "contextmenu": {
+        "layout": "调整布局",
+        "theme": "更换背景",
+        "widgets": "添加组件",
+        "klein-blue": "克莱因蓝",
+        "hooks-green": "胡克绿",
+        "geek-black": "极客黑",
+        "searchBar": "搜索栏",
+        "clock": "时钟",
+        "bookmark": "书签"
       }
     }
   },
@@ -29,7 +42,20 @@
         "github": "GitHub",
         "google": "Google",
         "zhihu": "ZhiHu",
-        "isearch": "iSearch"
+        "isearch": "iSearch",
+        "translate": "Translate",
+        "codelf": "CODELF"
+      },
+      "contextmenu": {
+        "layout": "layout",
+        "theme": "theme",
+        "widgets": "widgets",
+        "klein-blue": "klein-blue",
+        "hooks-green": "hooks-green",
+        "geek-black": "geek-black",
+        "searchBar": "search bar",
+        "clock": "clock",
+        "bookmark": "bookmark"
       }
     }
   }

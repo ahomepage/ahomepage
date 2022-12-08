@@ -9,7 +9,7 @@ const widgetsMemory = new Memory("widgets");
 interface WidgetItem {
   name: string;
   key: string;
-  storage?: string;
+  storage?: any;
 }
 
 export interface WidgetsReturn {
@@ -36,11 +36,15 @@ export class WidgetsModel {
     return this.get();
   }
 
-  setStorage(key: string, storage: string) {
+  setStorage(key: string, storage: Object) {
     let _widgets = this.get().widgets;
-    let matchedWidget = _widgets.find(widget => widget.key === key);
+    let matchedWidget = _widgets.find((widget) => widget.key === key);
     if (matchedWidget) {
-      matchedWidget.storage = storage;
+      try {
+        matchedWidget.storage = JSON.stringify(storage);
+      } catch {
+        matchedWidget.storage = undefined;
+      }
       this.setWidgets(_widgets);
     }
   }

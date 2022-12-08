@@ -1,16 +1,15 @@
 import { Editor, rootCtx, defaultValueCtx } from "@milkdown/core";
 import { listener, listenerCtx } from "@milkdown/plugin-listener";
-// import { diagram } from "@milkdown/plugin-diagram"
 import { cursor } from "@milkdown/plugin-cursor";
 import { gfm } from "@milkdown/preset-gfm";
 import { nord } from "@milkdown/theme-nord";
 import { ReactEditor, useEditor } from "@milkdown/react";
-import type { WidgetProps } from "layout/grid";
+import type { WidgetProps } from "layer/grid";
 
 import "widgets/note/index.css";
 
 function Note({ storage = "", setStorage, id }: WidgetProps) {
-  const { editor, getDom } = useEditor((root) => {
+  const { editor } = useEditor((root) => {
     let defaultValue = {};
     if (storage) {
       try {

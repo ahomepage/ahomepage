@@ -10,30 +10,24 @@ import ListItemText from "@mui/material/ListItemText";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { useTranslation } from "react-i18next";
-import { KeyboardEventHandler, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import baidu from "assets/baidu.svg";
 import github from "assets/github.svg";
 import google from "assets/google.svg";
 import zhihu from "assets/zhihu.svg";
+import translate from "assets/translate.svg";
+import codelf from "assets/codelf.png";
 
-interface Props {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
+import type { KeyboardEventHandler } from "react";
+import type { WidgetProps } from "layer/grid";
 
-function Search({ x, y, w, h }: Props) {
+function Search({ h, storage, setStorage }: WidgetProps) {
   const { t } = useTranslation();
   const searchButton = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const openEngine = Boolean(anchorEl);
 
-  /* 关键字 */
-  const [keyword, setKeyword] = useState("");
-
-  /* 搜索引擎列表 */
-  const [engines, setEngines] = useState([
+  const initEngines = [
     {
       icon: google,
       name: "google",
@@ -50,17 +44,44 @@ function Search({ x, y, w, h }: Props) {
       url: "https://github.com/search?q=",
     },
     {
+      icon: translate,
+      name: "translate",
+      url: "https://translate.google.com/?sl=zh-CN&tl=en&op=translate&text=",
+    },
+    {
+      icon: codelf,
+      name: "codelf",
+      url: "https://unbug.github.io/codelf/#",
+    },
+    {
       icon: zhihu,
       name: "zhihu",
       url: "https://www.zhihu.com/search?type=content&q=",
     },
-    {
-      icon: 'https://so.woa.com/static/favicon.png',
-      name: "isearch",
-      url: "https://so.woa.com/#/search?query=",
-    },
-  ]);
-  const [currentEngine, setCurrentEngine] = useState(engines[0]);
+  ];
+
+  /* 关键字 */
+  const [keyword, setKeyword] = useState("");
+
+  /* 搜索引擎列表 */
+  const [engines] = useState<typeof initEngines>(
+    storage.engines || initEngines
+  );
+  const storageEngineIndex = engines.findIndex(
+    (engine) => engine.name === storage.name
+  );
+  const [currentEngine, setCurrentEngine] = useState(
+    engines[storageEngineIndex !== -1 ? storageEngineIndex : 0]
+  );
+
+  useEffect(() => {
+    storage.name = currentEngine.name;
+    setStorage(storage);
+  }, [currentEngine, setStorage, storage]);
+  useEffect(() => {
+    storage.engines = engines;
+    setStorage(storage);
+  }, [engines, setStorage, storage]);
 
   /* 打开/收起搜索引擎选择框 */
   const openSwitchSearchEngine = () => {
@@ -72,7 +93,7 @@ function Search({ x, y, w, h }: Props) {
 
   /* 切换搜索引擎 */
   const handleSwitchSearchEngine = (engine: typeof engines[0]) => {
-    setCurrentEngine(engine);
+    storage.name = engine.name;
   };
 
   /* 搜索 */
@@ -86,11 +107,18 @@ function Search({ x, y, w, h }: Props) {
   ) => {
     switch (event.code) {
       case "Tab":
+        let targetIndex;
         let currentEngineIndex = engines.findIndex(
           (engine) => engine.name === currentEngine.name
         );
-        const targetIndex =
-          currentEngineIndex > engines.length - 2 ? 0 : currentEngineIndex + 1;
+        targetIndex = event.shiftKey
+          ? currentEngineIndex < 1
+            ? engines.length - 1
+            : currentEngineIndex - 1
+          : currentEngineIndex > engines.length - 2
+          ? 0
+          : currentEngineIndex + 1;
+
         setCurrentEngine(engines[targetIndex]);
         event.preventDefault();
         break;
@@ -116,12 +144,7 @@ function Search({ x, y, w, h }: Props) {
         aria-label="google"
         onClick={openSwitchSearchEngine}
       >
-        <img
-          src={currentEngine.icon}
-          width={h * 24}
-          height={h * 24}
-          alt=""
-        />
+        <img src={currentEngine.icon} width={h * 24} height={h * 24} alt="" />
       </IconButton>
 
       <Menu
@@ -134,6 +157,7 @@ function Search({ x, y, w, h }: Props) {
           <MenuItem
             key={engine.name}
             onClick={() => handleSwitchSearchEngine(engine)}
+            selected={engine === currentEngine}
           >
             <ListItemIcon>
               <img src={engine.icon} width="20" height="20" alt="" />
@@ -160,6 +184,7 @@ function Search({ x, y, w, h }: Props) {
           fontSize: `${h * 24}px`,
         }}
         aria-label="search"
+        onClick={() => handleSearch()}
       >
         <SearchIcon fontSize="inherit" />
       </IconButton>
@@ -171,7 +196,7 @@ Search.maxW = 12;
 Search.minH = 1;
 Search.maxH = 2;
 Search.lg = {
-  minW: 6,
+  minW: 4,
 };
 Search.md = {
   minW: 3,

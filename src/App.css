@@ -1,5 +1,16 @@
 :root {
-  --bg-color-1: aliceblue;
+  /* 克莱因蓝 */
+  --color-klein-blue: rgb(0,47,167);
+  --color-hooks-green: rgb(74,122,110);
+  --color-geek-black: rgb(0, 0, 0);
+  /* --bg-color-1: var(--color-klein-blue); */
+  --bg-color-1: var(--color-hooks-green);
+  /* --bg-color-1: var(--color-geek-black); */
+}
+
+@font-face {
+  font-family: Share Tech Mono;
+  src: url('./assets/ShareTechMono-Regular.ttf');
 }
 
 .app {
@@ -11,9 +22,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--bg-color-1);
 }
 .layer-features {
+  min-height: 100vh;
   /* background-color: #ddd; */
 }
 .layer-features > .grid-stack > .grid-stack-item > .grid-stack-item-content {

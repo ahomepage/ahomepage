@@ -1,12 +1,11 @@
-import React from "react";
-import { useState } from "react";
+import { useState, createElement } from "react";
 import { useTranslation } from "react-i18next";
 
 import GridLayout, { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { DeleteOutline, EditOutlined } from "@mui/icons-material";
 
 import WidgetWrap from "components/widget-wrap";
@@ -16,6 +15,8 @@ import widgetsMap from "widgetsMap";
 import { size, config } from "config";
 
 import { WidgetsModel, WidgetsReturn } from "lib";
+
+
 let widgetsInstance = new WidgetsModel(undefined, undefined, widgetsMap);
 interface Props {
   setToast?: any;
@@ -40,9 +41,38 @@ interface WidgetItem {
 const ReactGridLayout = WidthProvider(Responsive);
 
 function Grid({ setToast }: Props) {
+  const [contextMenu, setContextMenu] = useState<any>(null);
+
+  const handleContextMenu = (event: any) => {
+    event.preventDefault();
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX + 2,
+            mouseY: event.clientY - 6,
+          }
+        : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+          // Other native context menus might behave different.
+          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+          null
+    );
+  };
+
+  const handleClose = () => {
+    setContextMenu(null);
+  };
+  document.oncontextmenu = handleContextMenu;
+
   const { t } = useTranslation();
   /* is editing ? */
   const [editing, setEditing] = useState(false);
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Escape") {
+      setEditing(false);
+    }
+  };
+  document.addEventListener("keydown", handleKeyDown);
 
   /* layouts */
   const [layoutsRef, setLayoutsRef] = useState<GridLayout.Layouts>(
@@ -90,13 +120,16 @@ function Grid({ setToast }: Props) {
   };
   return (
     <div>
-      <Button onClick={() => addWidget("search", "")}>search</Button>
-      <Button onClick={() => addWidget("note", "")}>note</Button>
-      <Button onClick={() => setEditing(!editing)}>
-        <EditOutlined></EditOutlined>
-      </Button>
-      {Object.keys(layoutsRef).map((key) => layoutsRef[key].length)}
-      {widgetsRef.length}
+      <div style={{ position: "absolute", zIndex: 2 }}>
+        <Button onClick={() => addWidget("search", "")}>search</Button>
+        <Button onClick={() => addWidget("note", "")}>note</Button>
+        <Button onClick={() => addWidget("clock", "")}>clock</Button>
+        <Button onClick={() => setEditing(!editing)}>
+          <EditOutlined></EditOutlined>
+        </Button>
+        {Object.keys(layoutsRef).map((key) => layoutsRef[key].length)}
+        {widgetsRef.length}
+      </div>
       <ReactGridLayout
         className="layout"
         layouts={layoutsRef}
@@ -118,7 +151,7 @@ function Grid({ setToast }: Props) {
               widget={widget}
               removeWidget={removeWidget}
             >
-              {React.createElement(widgetsMap[widget.name], {
+              {createElement(widgetsMap[widget.name], {
                 storage: widget.storage,
                 setStorage: (storage: string) => {
                   widgetsInstance.setStorage(widget.key, storage);
@@ -155,6 +188,21 @@ function Grid({ setToast }: Props) {
           </div>
         ))}
       </ReactGridLayout>
+      <Menu
+        open={contextMenu !== null}
+        onClose={handleClose}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={handleClose}>Copy</MenuItem>
+        <MenuItem onClick={handleClose}>Print</MenuItem>
+        <MenuItem onClick={handleClose}>Highlight</MenuItem>
+        <MenuItem onClick={handleClose}>Email</MenuItem>
+      </Menu>
     </div>
   );
 }
