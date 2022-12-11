@@ -23,7 +23,8 @@ import type { WidgetProps } from "layer/grid";
 
 function Search({ h, storage, setStorage }: WidgetProps) {
   const { t } = useTranslation();
-  const searchButton = useRef(null);
+  const searchButtonRef = useRef(null);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const openEngine = Boolean(anchorEl);
 
@@ -85,7 +86,7 @@ function Search({ h, storage, setStorage }: WidgetProps) {
 
   /* 打开/收起搜索引擎选择框 */
   const openSwitchSearchEngine = () => {
-    setAnchorEl(searchButton.current);
+    setAnchorEl(searchButtonRef.current);
   };
   const closeSwitchSearchEngine = () => {
     setAnchorEl(null);
@@ -139,7 +140,7 @@ function Search({ h, storage, setStorage }: WidgetProps) {
       elevation={0}
     >
       <IconButton
-        ref={searchButton}
+        ref={searchButtonRef}
         sx={{ p: `${h * 10}px` }}
         aria-label="google"
         onClick={openSwitchSearchEngine}
@@ -168,6 +169,7 @@ function Search({ h, storage, setStorage }: WidgetProps) {
       </Menu>
 
       <InputBase
+        autoFocus={true}
         sx={{ ml: 1, flex: 1, fontSize: `${h * 14}px` }}
         placeholder={t("search.placeholder")}
         value={keyword}
